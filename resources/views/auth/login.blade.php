@@ -29,7 +29,7 @@
             <div class="row row-cols-1 row-cols-lg-2 row-cols-xl-3">
                 <div class="col mx-auto">
                     <div class="mb-4 text-center">
-                        <img src="{{ asset('adminbackend/assets/images/logo-gaa.png') }}" width="180" alt="" />
+                        <img src="{{ asset('adminbackend/assets/images/gaa.png') }}" width="400" alt="" />
                     </div>
                     <div class="card">
                         <div class="card-body">
@@ -41,6 +41,15 @@
 
 
                                 <div class="form-body">
+                                    @if ($errors->any())
+                                        <div class="alert alert-danger">
+                                            <ul>
+                                                @foreach ($errors->all() as $error)
+                                                    <li>{{ $error }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
 
                                     <form class="row g-3" method="POST" action="{{ route('login') }}">
                                         @csrf

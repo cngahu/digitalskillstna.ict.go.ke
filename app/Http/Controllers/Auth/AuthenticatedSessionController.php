@@ -42,38 +42,39 @@ class AuthenticatedSessionController extends Controller
             'alert-type' => 'success'
         );
 
-//        dd($request->user()->getRoleNames());
+//        dd($request->user()->role);
 
         $url='';
-        if ($request->user()->hasAnyRole([ 'Super Admin',  'Graphic Designer'])) {
+        if ($request->user()->role==([ 'Super Admin',  'Graphic Designer'])) {
             $url = '/backend/dashboard';
         }
-        elseif ($request->user()->hasRole('admin')) {
+        elseif ($request->user()->role=='admin') {
+
             $url = '/backend/dashboard';
         }
-        elseif ($request->user()->hasRole('advertising')) {
-            $url = '/backend-dashboard';
-        }
-        elseif ($request->user()->hasRole('designer')) {
-            $url = '/designer-dashboard';
-        }
-
-        elseif ($request->user()->hasRole('user')) {
-            $url = '/frontend/dashboard';
-        }
-        elseif ($request->user()->hasRole('Requestor')) {
-            $url = '/frontend/dashboard';
-        }
-
-        elseif ($request->user()->hasRole('manager')) {
-            $url = '/manager-dashboard';
-        }
-        elseif ($request->user()->hasRole('News Agent')) {
-            $url = '/news-dashboard';
-        }
+//        elseif ($request->user()->hasRole('advertising')) {
+//            $url = '/backend-dashboard';
+//        }
+//        elseif ($request->user()->hasRole('designer')) {
+//            $url = '/designer-dashboard';
+//        }
+//
+//        elseif ($request->user()->hasRole('user')) {
+//            $url = '/frontend/dashboard';
+//        }
+//        elseif ($request->user()->hasRole('Requestor')) {
+//            $url = '/frontend/dashboard';
+//        }
+//
+//        elseif ($request->user()->hasRole('manager')) {
+//            $url = '/manager-dashboard';
+//        }
+//        elseif ($request->user()->hasRole('News Agent')) {
+//            $url = '/news-dashboard';
+//        }
 
         else
-            return "Not defined";
+            dd('Here');
 
 
 //        elseif ($request->user()->role == 'user'){

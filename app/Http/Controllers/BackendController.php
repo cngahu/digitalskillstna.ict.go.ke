@@ -2,37 +2,89 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AgeGroup;
+use App\Models\EducationLevel;
+use App\Models\Gender;
 use App\Models\Invoice;
 use App\Models\PrintAdvert;
 use App\Models\Release;
+use App\Models\Submission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class BackendController extends Controller
 {
     public function BackendDashboard(){
-        $releases = Release::with(['invoices' => function($query) {
-            $query->select('invoices.id', 'invoices.release_id', 'amount', 'payment_status');
-        }])->get();
 
-        $releases = $releases->map(function ($release) {
-            $totalAmount = $release->invoices->sum('amount');
-            $paidAmount = $release->invoices->where('payment_status', 'Paid')->sum('amount');
-            $pendingAmount = $totalAmount - $paidAmount;
+        $totalSubmissions = Submission::count();
 
-            return [
-                'release' => $release,
-                'totalAmount' => $totalAmount,
-                'paidAmount' => $paidAmount,
-                'pendingAmount' => $pendingAmount,
-            ];
-        });
-        $totala = Invoice::sum('amount');
-        $totalpaid = Invoice::where('payment_status','Paid')->sum('amount');
-        $prints=PrintAdvert::count();
-        return view('backend.index',compact('releases','totala','prints','totalpaid'));
+        //age ranges
+        $ageRanges = AgeGroup::all(); // Assuming you have an AgeRange model
+        $submissionsByAge = [];
+
+        foreach ($ageRanges as $ageRange) {
+            $submissionsByAge[$ageRange->name] = Submission::where('age_range', $ageRange->id)->count();
+        }
+
+        //genders
+
+        $submissionsByGender = DB::table('submissions')
+            ->select('gender', DB::raw('count(*) as total'))
+            ->groupBy('gender')
+            ->get()
+            ->keyBy('gender'); // This allows easy access by gender ID
+
+        $genderCounts = [
+            'female' => $submissionsByGender->get(1)->total ?? 0, // Assuming 1 is for female
+            'male' => $submissionsByGender->get(2)->total ?? 0,   // Assuming 2 is for male
+            'prefer_not_to_say' => $submissionsByGender->get(3)->total ?? 0 // Assuming 3 is for prefer not to say
+        ];
+
+
+//education levels
+        $educationLevels = EducationLevel::all();
+        $submissionsByEducation = DB::table('submissions')
+            ->select('education_level', DB::raw('count(*) as total'))
+            ->groupBy('education_level')
+            ->get()
+            ->keyBy('education_level');
+
+        $educationCounts = [];
+        foreach ($educationLevels as $level) {
+            $educationCounts[$level->id] = $submissionsByEducation->get($level->id)->total ?? 0;
+        }
+
+
+
+
+
+
+
+
+        // Retrieve gender counts from the genders table
+        $genders = Gender::select('id', 'name')->get()->pluck('name', 'id');
+
+//        $submissionsByGender = Submission::select('gender', DB::raw('count(*) as total'))->groupBy('gender')->pluck('total', 'gender');
+
+        $submissionsByGender = Submission::select('gender', DB::raw('count(*) as total'))
+            ->groupBy('gender')
+            ->pluck('total', 'gender');
+
+        $submissionsByEducationLevel = Submission::select('education_level', DB::raw('count(*) as total'))->groupBy('education_level')->pluck('total', 'education_level');
+        $recentSubmissions = Submission::orderBy('created_at', 'desc')->take(5)->get();
+
+
+        $digitalTransformation = Submission::sum('digital_transformation');
+        // Prepare data for display
+        $genderCounts = [
+            'female' => $submissionsByGender[1] ?? 0, // Assuming 1 = Female
+            'male' => $submissionsByGender[2] ?? 0,   // Assuming 2 = Male
+            'prefer_not_to_say' => $submissionsByGender[3] ?? 0 // Assuming 3 = Prefer Not to Say
+        ];
+        return view('backend.index', compact('educationCounts', 'educationLevels','genderCounts','ageRanges','submissionsByAge','digitalTransformation','genderCounts','totalSubmissions','submissionsByGender','submissionsByEducationLevel','recentSubmissions'));
     }
 
 
