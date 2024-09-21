@@ -1,0 +1,44 @@
+server {
+  server_name jobs.cohesion.go.ke;
+  root /var/www/jobs.cohesion.go.ke/public;
+         index  index.html index.php;
+         access_log /var/log/nginx/jobs.cohesion.go.ke-access.log;
+         error_log /var/log/nginx/jobs.cohesion.go.ke-error.log error;
+        location / {
+      # try_files $uri $uri/ =404;
+         try_files $uri $uri/ /index.php?$args;
+       }
+        if (!-e $request_filename) {
+         rewrite ^.*$ /index.php last;
+        }
+        location ~ /\.ht {
+        deny all;
+    }
+    location ~ \.php$ {
+    include snippets/fastcgi-php.conf;
+    include fastcgi_params;
+    fastcgi_pass unix:/run/php/php8.2-fpm.sock;
+    fastcgi_param SCRIPT_FILENAME /var/www/jobs.cohesion.go.ke/public$fastcgi_script_name;
+    }
+
+
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/jobs.cohesion.go.ke/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/jobs.cohesion.go.ke/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+server {
+    if ($host = jobs.cohesion.go.ke) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+  server_name jobs.cohesion.go.ke;
+    listen 80;
+    return 404; # managed by Certbot
+
+
+}
