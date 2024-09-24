@@ -22,16 +22,16 @@
             <div class="col">
                 <div class="card radius-10 bg-gradient-ohhappiness">
                     <div class="card-body">
-                        <h5 class="mb-0 text-white"></h5>
-                        <p class="mb-0 text-white">Submissions by Age Range</p>
+                        <h5 class="mb-0 text-white">{{$national}}</h5>
+                        <p class="mb-0 text-white">National Government Submissions</p>
                     </div>
                 </div>
             </div>
             <div class="col">
                 <div class="card radius-10 bg-gradient-ibiza">
                     <div class="card-body">
-                        <h5 class="mb-0 text-white">{{ $submissionsByEducationLevel }}</h5>
-                        <p class="mb-0 text-white">Submissions by Education Level</p>
+                        <h5 class="mb-0 text-white">{{ $county }}</h5>
+                        <p class="mb-0 text-white">County Government Submissions</p>
                     </div>
                 </div>
             </div>

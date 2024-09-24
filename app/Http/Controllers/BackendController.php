@@ -84,7 +84,10 @@ class BackendController extends Controller
             'male' => $submissionsByGender[2] ?? 0,   // Assuming 2 = Male
             'prefer_not_to_say' => $submissionsByGender[3] ?? 0 // Assuming 3 = Prefer Not to Say
         ];
-        return view('backend.index', compact('educationCounts', 'educationLevels','genderCounts','ageRanges','submissionsByAge','digitalTransformation','genderCounts','totalSubmissions','submissionsByGender','submissionsByEducationLevel','recentSubmissions'));
+
+        $national=Submission::where('level_of_government','national')->count();
+        $county=Submission::where('level_of_government','county')->count();
+        return view('backend.index', compact('county','national','educationCounts', 'educationLevels','genderCounts','ageRanges','submissionsByAge','digitalTransformation','genderCounts','totalSubmissions','submissionsByGender','submissionsByEducationLevel','recentSubmissions'));
     }
 
 
